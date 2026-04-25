@@ -7,18 +7,17 @@ const authRoutes = require('./routes/auth');
 const { protect, restrictTo } = require('./middleware/auth');
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log('DB Error:', err));
 
+// Auth routes
 app.use('/api/auth', authRoutes);
 
+// Test protected routes
 app.get('/api/test/user', protect, restrictTo('user'), (req, res) => {
   res.json({ message: `Hello User! Your ID is ${req.user.id}` });
 });
