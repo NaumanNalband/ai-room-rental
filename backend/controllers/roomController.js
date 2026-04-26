@@ -1,11 +1,11 @@
 const Room = require('../models/Room');
+const { cloudinary } = require('../config/cloudinary');
 
 // GET all rooms with filters
 const getRooms = async (req, res) => {
   try {
     const { city, type, minPrice, maxPrice } = req.query;
     let filter = {};
-
     if (city) filter.city = { $regex: city, $options: 'i' };
     if (type) filter.type = type;
     if (minPrice || maxPrice) {
@@ -13,11 +13,9 @@ const getRooms = async (req, res) => {
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
-
     const rooms = await Room.find(filter)
       .populate('broker', 'name email')
       .sort({ createdAt: -1 });
-
     res.status(200).json(rooms);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -40,20 +38,12 @@ const getRoomById = async (req, res) => {
 const createRoom = async (req, res) => {
   try {
     const { title, description, price, type, amenities, city, address, lat, lng } = req.body;
-
     const room = await Room.create({
-      title,
-      description,
-      price,
-      type,
+      title, description, price, type,
       amenities: amenities || [],
-      city,
-      address,
-      lat,
-      lng,
+      city, address, lat, lng,
       broker: req.user.id
     });
-
     res.status(201).json(room);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -65,10 +55,8 @@ const updateRoom = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
     if (!room) return res.status(404).json({ message: 'Room not found' });
-
     if (room.broker.toString() !== req.user.id)
       return res.status(403).json({ message: 'Not authorized to update this room' });
-
     const updated = await Room.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json(updated);
   } catch (err) {
@@ -81,10 +69,8 @@ const deleteRoom = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
     if (!room) return res.status(404).json({ message: 'Room not found' });
-
     if (room.broker.toString() !== req.user.id)
       return res.status(403).json({ message: 'Not authorized to delete this room' });
-
     await Room.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Room deleted successfully' });
   } catch (err) {
@@ -102,4 +88,23 @@ const getMyRooms = async (req, res) => {
   }
 };
 
-module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms };
+// Upload images to room
+const uploadRoomImages = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room) return res.status(404).json({ message: 'Room not found' });
+    if (room.broker.toString() !== req.user.id)
+      return res.status(403).json({ message: 'Not authorized' });
+    const imageUrls = req.files.map(file => file.path);
+    const updated = await Room.findByIdAndUpdate(
+      req.params.id,
+      { $push: { images: { $each: imageUrls } } },
+      { new: true }
+    );
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages };
