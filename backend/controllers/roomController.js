@@ -1,5 +1,6 @@
 const Room = require('../models/Room');
 const { cloudinary } = require('../config/cloudinary');
+const axios = require('axios');
 
 // GET all rooms with filters
 const getRooms = async (req, res) => {
@@ -107,4 +108,22 @@ const uploadRoomImages = async (req, res) => {
   }
 };
 
-module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages };
+// NLP Search
+const nlpSearch = async (req, res) => {
+  try {
+    const { query } = req.body;
+    const aiResponse = await axios.post('http://localhost:5001/nlp/search', { query });
+    const filters = aiResponse.data;
+    let filter = {};
+    if (filters.city) filter.city = { $regex: filters.city, $options: 'i' };
+    if (filters.type) filter.type = filters.type;
+    if (filters.maxPrice) filter.price = { ...filter.price, $lte: filters.maxPrice };
+    if (filters.minPrice) filter.price = { ...filter.price, $gte: filters.minPrice };
+    const rooms = await Room.find(filter).populate('broker', 'name email').sort({ createdAt: -1 });
+    res.status(200).json({ filters, rooms });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages, nlpSearch };
