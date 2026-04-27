@@ -16,26 +16,35 @@ export default function BrokerDashboard() {
         <h1 className="text-xl font-bold text-blue-600">AI Room Rental</h1>
         <div className="flex items-center gap-4">
           <span className="text-gray-600">Hello, {user?.name}</span>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-          >
+          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">
             Logout
           </button>
         </div>
       </nav>
-      <div className="p-8">
-        <h2 className="text-2xl font-bold mb-4">Broker Dashboard</h2>
+
+      <div className="p-8 max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold mb-6">Broker Dashboard</h2>
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white p-6 rounded-lg shadow text-center">
+          <div
+            onClick={() => navigate('/broker/add-room')}
+            className="bg-white p-6 rounded-lg shadow text-center cursor-pointer hover:shadow-md transition"
+          >
+            <div className="text-3xl mb-2">🏠</div>
             <h3 className="text-lg font-semibold text-green-600">Add Room</h3>
             <p className="text-gray-500 text-sm mt-2">List a new room</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow text-center">
+          <div
+            onClick={() => navigate('/broker/my-listings')}
+            className="bg-white p-6 rounded-lg shadow text-center cursor-pointer hover:shadow-md transition"
+          >
+            <div className="text-3xl mb-2">📋</div>
             <h3 className="text-lg font-semibold text-green-600">My Listings</h3>
             <p className="text-gray-500 text-sm mt-2">Manage your rooms</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow text-center">
+          <div
+            className="bg-white p-6 rounded-lg shadow text-center cursor-pointer hover:shadow-md transition"
+          >
+            <div className="text-3xl mb-2">💬</div>
             <h3 className="text-lg font-semibold text-green-600">Inquiries</h3>
             <p className="text-gray-500 text-sm mt-2">Messages from users</p>
           </div>
