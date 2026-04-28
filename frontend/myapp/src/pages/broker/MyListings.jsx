@@ -9,13 +9,7 @@ export default function MyListings() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    fetchMyRooms();
-  }, []);
-=======
   useEffect(() => { fetchMyRooms(); }, []);
->>>>>>> feature/user-ui
 
   const fetchMyRooms = async () => {
     try {
@@ -23,13 +17,7 @@ export default function MyListings() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(res.data);
-<<<<<<< HEAD
-    } catch (err) {
-      console.log(err);
-    }
-=======
     } catch (err) { console.log(err); }
->>>>>>> feature/user-ui
     setLoading(false);
   };
 
@@ -41,48 +29,13 @@ export default function MyListings() {
       });
       setRooms(rooms.filter(r => r._id !== id));
       alert('Room deleted successfully!');
-<<<<<<< HEAD
-    } catch (err) {
-      alert('Failed to delete room');
-    }
-=======
     } catch (err) { alert('Failed to delete room'); }
->>>>>>> feature/user-ui
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-blue-600">AI Room Rental</h1>
-<<<<<<< HEAD
-        <button onClick={() => navigate('/broker')} className="text-blue-500 hover:underline">
-          ← Back to Dashboard
-        </button>
-      </nav>
-
-      <div className="max-w-4xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">My Listings</h2>
-          <button
-            onClick={() => navigate('/broker/add-room')}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          >
-            + Add New Room
-          </button>
-        </div>
-
-        {loading ? (
-          <p className="text-gray-500">Loading...</p>
-        ) : rooms.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-gray-500 mb-4">No rooms listed yet</p>
-            <button
-              onClick={() => navigate('/broker/add-room')}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            >
-              Add Your First Room
-            </button>
-=======
         <button onClick={() => navigate('/broker')} className="text-blue-500 hover:underline">← Back to Dashboard</button>
       </nav>
       <div className="max-w-4xl mx-auto p-8">
@@ -94,7 +47,6 @@ export default function MyListings() {
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <p className="text-gray-500 mb-4">No rooms listed yet</p>
             <button onClick={() => navigate('/broker/add-room')} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Your First Room</button>
->>>>>>> feature/user-ui
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4">
@@ -108,18 +60,7 @@ export default function MyListings() {
                     {room.isAvailable ? 'Available' : 'Not Available'}
                   </span>
                 </div>
-<<<<<<< HEAD
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleDelete(room._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
-=======
                 <button onClick={() => handleDelete(room._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">Delete</button>
->>>>>>> feature/user-ui
               </div>
             ))}
           </div>

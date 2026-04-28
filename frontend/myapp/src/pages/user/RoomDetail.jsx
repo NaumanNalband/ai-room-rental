@@ -39,8 +39,9 @@ export default function RoomDetail() {
       setSent(true);
       setMessage('');
     } catch (err) {
-      alert('Inquiry feature coming on Day 13!');
-    }
+  console.log('Error:', err);
+  alert(err.response?.data?.message || 'Failed to send inquiry');
+}
   };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
