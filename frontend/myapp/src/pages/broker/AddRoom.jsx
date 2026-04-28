@@ -31,7 +31,10 @@ export default function AddRoom() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+<<<<<<< HEAD
       // Upload images if selected
+=======
+>>>>>>> feature/user-ui
       if (images.length > 0) {
         const formData = new FormData();
         images.forEach(img => formData.append('images', img));
@@ -59,6 +62,7 @@ export default function AddRoom() {
           ← Back to Dashboard
         </button>
       </nav>
+<<<<<<< HEAD
 
       <div className="max-w-2xl mx-auto p-8">
         <h2 className="text-2xl font-bold mb-6">Add New Room</h2>
@@ -87,6 +91,17 @@ export default function AddRoom() {
               className="border p-2 rounded outline-none focus:border-blue-400"
               onChange={e => setForm({...form, type: e.target.value})}
             >
+=======
+      <div className="max-w-2xl mx-auto p-8">
+        <h2 className="text-2xl font-bold mb-6">Add New Room</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <div className="bg-white rounded-lg shadow p-6">
+          <input className="w-full border p-2 rounded mb-4 outline-none focus:border-blue-400" placeholder="Room Title" onChange={e => setForm({...form, title: e.target.value})} />
+          <textarea className="w-full border p-2 rounded mb-4 outline-none focus:border-blue-400" placeholder="Description" rows={3} onChange={e => setForm({...form, description: e.target.value})} />
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <input className="border p-2 rounded outline-none focus:border-blue-400" placeholder="Price (₹)" type="number" onChange={e => setForm({...form, price: e.target.value})} />
+            <select className="border p-2 rounded outline-none focus:border-blue-400" onChange={e => setForm({...form, type: e.target.value})}>
+>>>>>>> feature/user-ui
               <option value="1BHK">1BHK</option>
               <option value="2BHK">2BHK</option>
               <option value="3BHK">3BHK</option>
@@ -94,6 +109,7 @@ export default function AddRoom() {
               <option value="Studio">Studio</option>
             </select>
           </div>
+<<<<<<< HEAD
           <input
             className="w-full border p-2 rounded mb-4 outline-none focus:border-blue-400"
             placeholder="City"
@@ -135,6 +151,18 @@ export default function AddRoom() {
             onClick={handleSubmit}
             className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
           >
+=======
+          <input className="w-full border p-2 rounded mb-4 outline-none focus:border-blue-400" placeholder="City" onChange={e => setForm({...form, city: e.target.value})} />
+          <input className="w-full border p-2 rounded mb-4 outline-none focus:border-blue-400" placeholder="Full Address" onChange={e => setForm({...form, address: e.target.value})} />
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <input className="border p-2 rounded outline-none focus:border-blue-400" placeholder="Latitude (e.g. 16.8524)" onChange={e => setForm({...form, lat: e.target.value})} />
+            <input className="border p-2 rounded outline-none focus:border-blue-400" placeholder="Longitude (e.g. 74.5815)" onChange={e => setForm({...form, lng: e.target.value})} />
+          </div>
+          <input className="w-full border p-2 rounded mb-4 outline-none focus:border-blue-400" placeholder="Amenities (comma separated: WiFi, AC, Parking)" onChange={e => setForm({...form, amenities: e.target.value})} />
+          <input className="w-full border p-2 rounded mb-4" type="file" multiple accept="image/*" onChange={e => setImages(Array.from(e.target.files))} />
+          {images.length > 0 && <p className="text-green-600 text-sm mb-4">{images.length} image(s) selected</p>}
+          <button onClick={handleSubmit} className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
+>>>>>>> feature/user-ui
             {loading ? 'Adding Room...' : 'Add Room'}
           </button>
         </div>
