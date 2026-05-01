@@ -126,4 +126,44 @@ const nlpSearch = async (req, res) => {
   }
 };
 
-module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages, nlpSearch };
+// ML Recommendations based on user preferences
+const mlRecommendations = async (req, res) => {
+  try {
+    const { query } = req.body;
+
+    // Get all rooms first
+    const allRooms = await Room.find()
+      .populate('broker', 'name email')
+      .lean();
+
+    if (allRooms.length === 0) {
+      return res.status(200).json({ recommendations: [] });
+    }
+
+    // Train ML model with current rooms
+    await axios.post('http://localhost:5001/ml/train', { rooms: allRooms });
+
+    // Get recommendations
+    const aiResponse = await axios.post('http://localhost:5001/ml/recommend', {
+      query: query || 'good room with amenities',
+      top_n: 5
+    });
+
+    const recommendations = aiResponse.data.recommendations;
+    const roomDetails = await Room.find({
+      _id: { $in: recommendations.map(r => r.room_id) }
+    }).populate('broker', 'name email');
+
+    res.status(200).json({
+      query,
+      recommendations: roomDetails.map((room, idx) => ({
+        ...room.toObject(),
+        ml_score: recommendations[idx]?.similarity_score || 0
+      }))
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages, nlpSearch, mlRecommendations };
