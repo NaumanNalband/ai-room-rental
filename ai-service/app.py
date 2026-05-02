@@ -3,13 +3,14 @@ from flask_cors import CORS
 import spacy
 from ml_recommender import train_recommender, get_room_recommendations
 from collab_recommender import train_collab_model, get_collab_recommendations
-
+from image_classifier import classify_room_image, extract_features
+ 
 app = Flask(__name__)
 CORS(app)
-
+ 
 # Load spaCy model
 nlp = spacy.load('en_core_web_sm')
-
+ 
 # Keywords mapping
 ROOM_TYPES = {
     '1bhk': '1BHK', 'one bhk': '1BHK', '1 bhk': '1BHK',
@@ -18,33 +19,33 @@ ROOM_TYPES = {
     'pg': 'PG', 'paying guest': 'PG',
     'studio': 'Studio'
 }
-
+ 
 PRICE_KEYWORDS = {
     'cheap': 5000, 'affordable': 7000, 'budget': 5000,
     'expensive': 15000, 'luxury': 20000, 'premium': 15000
 }
-
+ 
 AMENITY_KEYWORDS = [
     'wifi', 'ac', 'parking', 'gym', 'swimming pool',
     'furnished', 'semi-furnished', 'water', 'electricity'
 ]
-
+ 
 CITIES = [
     'sangli', 'pune', 'mumbai', 'kolhapur', 'nashik',
     'nagpur', 'aurangabad', 'solapur', 'satara'
 ]
-
+ 
 @app.route('/ping', methods=['GET'])
 def ping():
     return jsonify({'message': 'AI Service running!'})
-
+ 
 @app.route('/nlp/search', methods=['POST'])
 def nlp_search():
     data = request.get_json()
     query = data.get('query', '').lower()
-
+ 
     doc = nlp(query)
-
+ 
     result = {
         'original_query': query,
         'city': None,
@@ -53,19 +54,19 @@ def nlp_search():
         'minPrice': None,
         'amenities': []
     }
-
+ 
     # Extract city
     for city in CITIES:
         if city in query:
             result['city'] = city.capitalize()
             break
-
+ 
     # Extract room type
     for keyword, room_type in ROOM_TYPES.items():
         if keyword in query:
             result['type'] = room_type
             break
-
+ 
     # Extract price intent
     for keyword, price in PRICE_KEYWORDS.items():
         if keyword in query:
@@ -74,12 +75,12 @@ def nlp_search():
             else:
                 result['minPrice'] = price
             break
-
+ 
     # Extract amenities
     for amenity in AMENITY_KEYWORDS:
         if amenity in query:
             result['amenities'].append(amenity)
-
+ 
     # Extract numbers (price range)
     for token in doc:
         if token.like_num:
@@ -89,9 +90,9 @@ def nlp_search():
                     result['maxPrice'] = num
                 elif 'above' in query or 'more' in query or 'over' in query:
                     result['minPrice'] = num
-
+ 
     return jsonify(result)
-
+ 
 @app.route('/ml/train', methods=['POST'])
 def train_ml():
     """Train ML model with room data"""
@@ -113,7 +114,7 @@ def train_ml():
             return jsonify({'message': 'Training failed'})
     except Exception as err:
         return jsonify({'message': str(err)}), 500
-
+ 
 @app.route('/ml/recommend', methods=['POST'])
 def recommend():
     """Get room recommendations based on user preferences"""
@@ -134,7 +135,7 @@ def recommend():
         })
     except Exception as err:
         return jsonify({'message': str(err)}), 500
-
+ 
 @app.route('/collab/train', methods=['POST'])
 def train_collab():
     """Train collaborative filtering model"""
@@ -156,7 +157,7 @@ def train_collab():
             return jsonify({'message': 'Training failed'})
     except Exception as err:
         return jsonify({'message': str(err)}), 500
-
+ 
 @app.route('/collab/recommend', methods=['POST'])
 def recommend_collab():
     """Get collaborative filtering recommendations"""
@@ -181,6 +182,40 @@ def recommend_collab():
         })
     except Exception as err:
         return jsonify({'message': str(err)}), 500
-
+ 
+@app.route('/dl/classify', methods=['POST'])
+def classify_image():
+    """Classify room image using TensorFlow MobileNetV2"""
+    try:
+        data = request.get_json()
+        image_url = data.get('image_url', '')
+        top_k = data.get('top_k', 5)
+        
+        if not image_url:
+            return jsonify({'message': 'Image URL required'})
+        
+        result = classify_room_image(image_url, top_k)
+        
+        return jsonify(result)
+    except Exception as err:
+        return jsonify({'message': str(err)}), 500
+ 
+@app.route('/dl/extract-features', methods=['POST'])
+def extract_room_features():
+    """Extract room features from image"""
+    try:
+        data = request.get_json()
+        image_url = data.get('image_url', '')
+        
+        if not image_url:
+            return jsonify({'message': 'Image URL required'})
+        
+        result = extract_features(image_url)
+        
+        return jsonify(result)
+    except Exception as err:
+        return jsonify({'message': str(err)}), 500
+ 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
+ 

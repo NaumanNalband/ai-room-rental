@@ -227,15 +227,49 @@ const mlRecommendations = async (req, res) => {
   }
 };
 
+// Deep Learning Image Classification
+const classifyRoomImage = async (req, res) => {
+  try {
+    const { image_url } = req.body;
+
+    if (!image_url) {
+      return res.status(400).json({ message: 'Image URL required' });
+    }
+
+    // Call Flask DL service
+    const aiResponse = await axios.post('http://localhost:5001/dl/classify', {
+      image_url,
+      top_k: 5
+    });
+
+    res.status(200).json(aiResponse.data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Extract room features from image
+const extractImageFeatures = async (req, res) => {
+  try {
+    const { image_url } = req.body;
+
+    if (!image_url) {
+      return res.status(400).json({ message: 'Image URL required' });
+    }
+
+    // Call Flask DL service
+    const aiResponse = await axios.post('http://localhost:5001/dl/extract-features', {
+      image_url
+    });
+
+    res.status(200).json(aiResponse.data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = { 
-  getRooms, 
-  getRoomById, 
-  createRoom, 
-  updateRoom, 
-  deleteRoom, 
-  getMyRooms, 
-  uploadRoomImages, 
-  nlpSearch, 
-  mlRecommendations,
-  collabRecommendations
+  getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, 
+  uploadRoomImages, nlpSearch, mlRecommendations, collabRecommendations,
+  classifyRoomImage, extractImageFeatures
 };
