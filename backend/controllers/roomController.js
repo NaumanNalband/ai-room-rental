@@ -126,4 +126,116 @@ const nlpSearch = async (req, res) => {
   }
 };
 
-module.exports = { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages, nlpSearch };
+// Collaborative Filtering Recommendations
+const collabRecommendations = async (req, res) => {
+  try {
+    const { user_id } = req.body;
+
+    if (!user_id) {
+      return res.status(400).json({ message: 'User ID required' });
+    }
+
+    // Get all rooms
+    const allRooms = await Room.find()
+      .populate('broker', 'name email')
+      .lean();
+
+    if (allRooms.length === 0) {
+      return res.status(200).json({ recommendations: [] });
+    }
+
+    // Get all inquiries to use as ratings
+    const Inquiry = require('../models/Inquiry');
+    const inquiries = await Inquiry.find()
+      .select('user room')
+      .lean();
+
+    // Convert inquiries to ratings (1-5 scale)
+    const ratings = inquiries.map(inq => ({
+      user_id: inq.user.toString(),
+      room_id: inq.room.toString(),
+      rating: 4  // Default rating for inquiries
+    }));
+
+    if (ratings.length < 2) {
+      // Not enough data, return all rooms
+      return res.status(200).json({
+        message: 'Not enough user data yet',
+        recommendations: allRooms.slice(0, 5)
+      });
+    }
+
+    // Train model
+    await axios.post('http://localhost:5001/collab/train', { ratings });
+
+    // Get recommendations
+    const aiResponse = await axios.post('http://localhost:5001/collab/recommend', {
+      user_id,
+      rooms: allRooms,
+      top_n: 5
+    });
+
+    const recommendations = aiResponse.data.recommendations;
+
+    res.status(200).json({
+      user_id,
+      recommendations,
+      method: 'collaborative_filtering'
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ML Recommendations based on user preferences
+const mlRecommendations = async (req, res) => {
+  try {
+    const { query } = req.body;
+
+    // Get all rooms first
+    const allRooms = await Room.find()
+      .populate('broker', 'name email')
+      .lean();
+
+    if (allRooms.length === 0) {
+      return res.status(200).json({ recommendations: [] });
+    }
+
+    // Train ML model with current rooms
+    await axios.post('http://localhost:5001/ml/train', { rooms: allRooms });
+
+    // Get recommendations
+    const aiResponse = await axios.post('http://localhost:5001/ml/recommend', {
+      query: query || 'good room with amenities',
+      top_n: 5
+    });
+
+    const recommendations = aiResponse.data.recommendations;
+    const roomDetails = await Room.find({
+      _id: { $in: recommendations.map(r => r.room_id) }
+    }).populate('broker', 'name email');
+
+    res.status(200).json({
+      query,
+      recommendations: roomDetails.map((room, idx) => ({
+        ...room.toObject(),
+        ml_score: recommendations[idx]?.similarity_score || 0
+      }))
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { 
+  getRooms, 
+  getRoomById, 
+  createRoom, 
+  updateRoom, 
+  deleteRoom, 
+  getMyRooms, 
+  uploadRoomImages, 
+  nlpSearch, 
+  mlRecommendations,
+  collabRecommendations
+};

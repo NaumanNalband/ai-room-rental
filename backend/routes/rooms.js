@@ -10,13 +10,17 @@ const {
   deleteRoom,
   getMyRooms,
   uploadRoomImages,
-  nlpSearch
+  nlpSearch,
+  mlRecommendations,
+  collabRecommendations
 } = require('../controllers/roomController');
 
 // Public routes
 router.get('/', getRooms);
 router.get('/:id', getRoomById);
 router.post('/search/nlp', nlpSearch);
+router.post('/recommend/ml', mlRecommendations);
+router.post('/recommend/collab', collabRecommendations);
 
 // Broker only routes
 router.post('/', protect, restrictTo('broker'), createRoom);

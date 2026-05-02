@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import spacy
+from ml_recommender import train_recommender, get_room_recommendations
+from collab_recommender import train_collab_model, get_collab_recommendations
 
 app = Flask(__name__)
 CORS(app)
@@ -89,6 +91,96 @@ def nlp_search():
                     result['minPrice'] = num
 
     return jsonify(result)
+
+@app.route('/ml/train', methods=['POST'])
+def train_ml():
+    """Train ML model with room data"""
+    try:
+        data = request.get_json()
+        rooms = data.get('rooms', [])
+        
+        if not rooms:
+            return jsonify({'message': 'No rooms provided'})
+        
+        success = train_recommender(rooms)
+        
+        if success:
+            return jsonify({
+                'message': 'Model trained successfully',
+                'rooms_trained': len(rooms)
+            })
+        else:
+            return jsonify({'message': 'Training failed'})
+    except Exception as err:
+        return jsonify({'message': str(err)}), 500
+
+@app.route('/ml/recommend', methods=['POST'])
+def recommend():
+    """Get room recommendations based on user preferences"""
+    try:
+        data = request.get_json()
+        query = data.get('query', '')
+        top_n = data.get('top_n', 5)
+        
+        if not query:
+            return jsonify({'message': 'Query required'})
+        
+        recommendations = get_room_recommendations(query, top_n)
+        
+        return jsonify({
+            'query': query,
+            'recommendations': recommendations,
+            'count': len(recommendations)
+        })
+    except Exception as err:
+        return jsonify({'message': str(err)}), 500
+
+@app.route('/collab/train', methods=['POST'])
+def train_collab():
+    """Train collaborative filtering model"""
+    try:
+        data = request.get_json()
+        ratings = data.get('ratings', [])
+        
+        if not ratings:
+            return jsonify({'message': 'No ratings provided'})
+        
+        success = train_collab_model(ratings)
+        
+        if success:
+            return jsonify({
+                'message': 'Collaborative model trained successfully',
+                'ratings_used': len(ratings)
+            })
+        else:
+            return jsonify({'message': 'Training failed'})
+    except Exception as err:
+        return jsonify({'message': str(err)}), 500
+
+@app.route('/collab/recommend', methods=['POST'])
+def recommend_collab():
+    """Get collaborative filtering recommendations"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id', '')
+        rooms = data.get('rooms', [])
+        top_n = data.get('top_n', 5)
+        
+        if not user_id:
+            return jsonify({'message': 'User ID required'})
+        
+        if not rooms:
+            return jsonify({'message': 'Rooms data required'})
+        
+        recommendations = get_collab_recommendations(user_id, rooms, top_n)
+        
+        return jsonify({
+            'user_id': user_id,
+            'recommendations': recommendations,
+            'count': len(recommendations)
+        })
+    except Exception as err:
+        return jsonify({'message': str(err)}), 500
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
