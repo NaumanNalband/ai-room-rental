@@ -1,5 +1,6 @@
 const inquiryRoutes = require('./routes/inquiries');
 const adminRoutes = require('./routes/admin');
+const wishlistRoutes = require('./routes/wishlist');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 app.get('/api/test/user', protect, restrictTo('user'), (req, res) => {
   res.json({ message: `Hello User! Your ID is ${req.user.id}` });
 });
