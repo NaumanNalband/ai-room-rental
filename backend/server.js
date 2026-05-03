@@ -1,4 +1,5 @@
 const inquiryRoutes = require('./routes/inquiries');
+const adminRoutes = require('./routes/admin');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -18,6 +19,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/admin', adminRoutes);
 app.get('/api/test/user', protect, restrictTo('user'), (req, res) => {
   res.json({ message: `Hello User! Your ID is ${req.user.id}` });
 });
