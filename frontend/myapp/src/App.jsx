@@ -9,6 +9,12 @@ import MyListings from './pages/broker/MyListings'
 import SearchRooms from './pages/user/SearchRooms'
 import RoomDetail from './pages/user/RoomDetail'
 import PrivateRoute from './components/PrivateRoute'
+import Wishlist from './pages/user/Wishlist';
+import MyInquiries from './pages/user/MyInquiries';
+import Profile from './pages/user/Profile';
+import BrokerInquiries from './pages/broker/BrokerInquiries';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminRoomsPage from './pages/AdminRoomsPage';
 
 export default function App() {
   return (
@@ -23,6 +29,12 @@ export default function App() {
       <Route path="/broker/add-room" element={<PrivateRoute role="broker"><AddRoom /></PrivateRoute>} />
       <Route path="/broker/my-listings" element={<PrivateRoute role="broker"><MyListings /></PrivateRoute>} />
       <Route path="/admin" element={<PrivateRoute role="admin"><AdminDashboard /></PrivateRoute>} />
+      <Route path="/wishlist" element={<PrivateRoute role="user"><Wishlist /></PrivateRoute>} />
+      <Route path="/inquiries" element={<PrivateRoute role="user"><MyInquiries /></PrivateRoute>} />
+      <Route path="/profile" element={<PrivateRoute role="user"><Profile /></PrivateRoute>} />
+      <Route path="/broker/inquiries" element={<PrivateRoute role="broker"><BrokerInquiries /></PrivateRoute>} />
+      <Route path="/admin/users" element={<PrivateRoute role="admin"><AdminUsersPage /></PrivateRoute>} />
+      <Route path="/admin/rooms" element={<PrivateRoute role="admin"><AdminRoomsPage /></PrivateRoute>} />
     </Routes>
   )
 }
