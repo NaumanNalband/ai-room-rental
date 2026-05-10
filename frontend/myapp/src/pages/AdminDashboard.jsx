@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, API_URL } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState({});
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/stats', {
+      const res = await axios.get(`${API_URL}/api/admin/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(res.data);
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/users', {
+      const res = await axios.get(`${API_URL}/api/admin/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data.users);
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   const fetchRooms = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/rooms', {
+      const res = await axios.get(`${API_URL}/api/admin/rooms`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(res.data.rooms);
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
   const changeUserRole = async (userId, newRole) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/admin/users/${userId}/role`,
+        `${API_URL}/api/admin/users/${userId}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+      await axios.delete(`${API_URL}/api/admin/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchUsers();
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
   const toggleRoomAvailability = async (roomId, currentStatus) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/admin/rooms/${roomId}/availability`,
+        `${API_URL}/api/admin/rooms/${roomId}/availability`,
         { isAvailable: !currentStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      await axios.delete(`http://localhost:5000/api/admin/rooms/${roomId}`, {
+      await axios.delete(`${API_URL}/api/admin/rooms/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchRooms();

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function BrokerInquiries() {
-  const { token } = useAuth();
+  const { token, API_URL } = useAuth();
   const navigate = useNavigate();
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,7 @@ export default function BrokerInquiries() {
 
   const fetchInquiries = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/inquiries/broker/inquiries', {
+      const res = await axios.get(`${API_URL}/api/inquiries/broker/inquiries`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setInquiries(res.data);
@@ -35,7 +35,7 @@ export default function BrokerInquiries() {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/inquiries/${selectedInquiry._id}/status`,
+        `${API_URL}/api/inquiries/${selectedInquiry._id}/status`,
         { status: 'replied' },
         { headers: { Authorization: `Bearer ${token}` } }
       );

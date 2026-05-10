@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function MyInquiries() {
-  const { token } = useAuth();
+  const { token, API_URL } = useAuth();
   const navigate = useNavigate();
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function MyInquiries() {
 
   const fetchInquiries = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/inquiries/user/my-inquiries', {
+      const res = await axios.get(`${API_URL}/api/inquiries/user/my-inquiries`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setInquiries(res.data);

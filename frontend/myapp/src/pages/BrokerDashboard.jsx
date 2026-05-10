@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function BrokerDashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, API_URL } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ 
     roomsCount: 0, 
@@ -20,10 +20,10 @@ export default function BrokerDashboard() {
     try {
       const token = localStorage.getItem('token');
       const [myRooms, inquiries] = await Promise.all([
-        axios.get('http://localhost:5000/api/rooms/broker/myrooms', {
+        axios.get(`${API_URL}/api/rooms/broker/myrooms`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:5000/api/inquiries/broker/inquiries', {
+        axios.get(`${API_URL}/api/inquiries/broker/inquiries`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);

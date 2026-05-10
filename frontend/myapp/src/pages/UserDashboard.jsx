@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function UserDashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, API_URL } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ wishlistCount: 0, inquiriesCount: 0 });
 
@@ -16,10 +16,10 @@ export default function UserDashboard() {
     try {
       const token = localStorage.getItem('token');
       const [wishlist, inquiries] = await Promise.all([
-        axios.get('http://localhost:5000/api/wishlist/count', {
+        axios.get(`${API_URL}/api/wishlist/count`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:5000/api/inquiries/user/my-inquiries', {
+        axios.get(`${API_URL}/api/inquiries/user/my-inquiries`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -39,7 +39,10 @@ export default function UserDashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-600">🏠 AI Room Rental</h1>
           <button
-            onClick={logout}
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
           >
             Logout
@@ -91,7 +94,10 @@ export default function UserDashboard() {
           </div>
 
           <div 
-            onClick={() => navigate('/profile')}
+            onClick={() => {
+              console.log('Profile button clicked');
+              navigate('/profile');
+            }}
             className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer hover:scale-105 transform"
           >
             <div className="flex items-center justify-between">

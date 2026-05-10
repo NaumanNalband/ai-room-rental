@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Wishlist() {
-  const { token } = useAuth();
+  const { token, API_URL } = useAuth();
   const navigate = useNavigate();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function Wishlist() {
 
   const fetchWishlist = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/wishlist', {
+      const res = await axios.get(`${API_URL}/api/wishlist`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWishlist(res.data.wishlist);
@@ -27,7 +27,7 @@ export default function Wishlist() {
 
   const removeFromWishlist = async (roomId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/wishlist/${roomId}`, {
+      await axios.delete(`${API_URL}/api/wishlist/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWishlist(wishlist.filter(w => w.room._id !== roomId));
