@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { API_URL } = useAuth();
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/register', form);
+      await axios.post(`${API_URL}/api/auth/register`, form);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
