@@ -27,14 +27,14 @@ export default function AddRoom() {
         amenities: form.amenities.split(',').map(a => a.trim()).filter(a => a)
       };
 
-      const res = await axios.post('http://localhost:5000/api/rooms', roomData, {
+      const res = await axios.post('https://ai-room-rental-backend.onrender.com/api/rooms', roomData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       if (images.length > 0) {
         const formData = new FormData();
         images.forEach(img => formData.append('images', img));
-        await axios.post(`http://localhost:5000/api/rooms/${res.data._id}/images`, formData, {
+        await axios.post(`https://ai-room-rental-backend.onrender.com/api/rooms/${res.data._id}/images`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'

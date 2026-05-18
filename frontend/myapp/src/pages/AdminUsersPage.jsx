@@ -17,7 +17,7 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/users', {
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/admin/users', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data.users);
@@ -29,7 +29,7 @@ export default function AdminUsersPage() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/stats', {
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/admin/stats', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(res.data);
@@ -44,7 +44,7 @@ export default function AdminUsersPage() {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+      await axios.delete(`https://ai-room-rental-backend.onrender.com/api/admin/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(users.filter(u => u._id !== userId));

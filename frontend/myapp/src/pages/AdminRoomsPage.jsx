@@ -17,7 +17,7 @@ export default function AdminRoomsPage() {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/rooms', {
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/admin/rooms', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(res.data.rooms);
@@ -29,7 +29,7 @@ export default function AdminRoomsPage() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/stats', {
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/admin/stats', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(res.data);
@@ -44,7 +44,7 @@ export default function AdminRoomsPage() {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/rooms/${roomId}`, {
+      await axios.delete(`https://ai-room-rental-backend.onrender.com/api/admin/rooms/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(rooms.filter(r => r._id !== roomId));
@@ -58,7 +58,7 @@ export default function AdminRoomsPage() {
   const toggleAvailability = async (roomId, currentStatus) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/admin/rooms/${roomId}/availability`,
+        `https://ai-room-rental-backend.onrender.com/api/admin/rooms/${roomId}/availability`,
         { isAvailable: !currentStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

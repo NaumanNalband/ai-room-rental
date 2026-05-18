@@ -21,7 +21,7 @@ export default function SearchRooms() {
   const fetchAllRooms = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/rooms');
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/rooms');
       setRooms(res.data);
     } catch (err) {
       console.log(err);
@@ -31,7 +31,7 @@ export default function SearchRooms() {
 
   const fetchWishlistCount = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/wishlist', {
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/wishlist', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const ids = new Set(res.data.wishlist.map(w => w.room._id));
@@ -45,7 +45,7 @@ export default function SearchRooms() {
     if (!nlpQuery.trim()) return;
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/rooms/search/nlp', {
+      const res = await axios.post('https://ai-room-rental-backend.onrender.com/api/rooms/search/nlp', {
         query: nlpQuery
       });
       setRooms(res.data.rooms);
@@ -60,7 +60,7 @@ export default function SearchRooms() {
   const handleFilterSearch = async () => {
     setLoading(true);
     try {
-      let url = 'http://localhost:5000/api/rooms?';
+      let url = 'https://ai-room-rental-backend.onrender.com/api/rooms?';
       if (filters.city) url += `city=${filters.city}&`;
       if (filters.type) url += `type=${filters.type}&`;
       if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
@@ -85,13 +85,13 @@ export default function SearchRooms() {
     try {
       if (wishlistItems.has(roomId)) {
         // Remove from wishlist
-        await axios.delete(`http://localhost:5000/api/wishlist/${roomId}`, {
+        await axios.delete(`https://ai-room-rental-backend.onrender.com/api/wishlist/${roomId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWishlistItems(prev => new Set([...prev].filter(id => id !== roomId)));
       } else {
         // Add to wishlist
-        await axios.post('http://localhost:5000/api/wishlist', 
+        await axios.post('https://ai-room-rental-backend.onrender.com/api/wishlist', 
           { room_id: roomId },
           { headers: { Authorization: `Bearer ${token}` } }
         );

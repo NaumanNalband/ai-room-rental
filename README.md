@@ -48,7 +48,7 @@ A full stack AI powered room rental platform with personalized recommendations u
 cd backend
 npm install
 node server.js
-Runs on http://localhost:5000
+Runs on https://ai-room-rental-backend.onrender.com
 
 ### Frontend
 cd frontend/myapp

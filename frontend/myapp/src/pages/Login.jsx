@@ -13,7 +13,7 @@ export default function Login() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post('https://ai-room-rental-backend.onrender.com/api/auth/login', form);
       login(res.data.user, res.data.token);
       if (res.data.user.role === 'admin') navigate('/admin');
       else if (res.data.user.role === 'broker') navigate('/broker');

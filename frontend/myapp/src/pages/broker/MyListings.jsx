@@ -13,7 +13,7 @@ export default function MyListings() {
 
   const fetchMyRooms = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/rooms/broker/myrooms', {
+      const res = await axios.get('https://ai-room-rental-backend.onrender.com/api/rooms/broker/myrooms', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(res.data);
@@ -24,7 +24,7 @@ export default function MyListings() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this room?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/rooms/${id}`, {
+      await axios.delete(`https://ai-room-rental-backend.onrender.com/api/rooms/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(rooms.filter(r => r._id !== id));

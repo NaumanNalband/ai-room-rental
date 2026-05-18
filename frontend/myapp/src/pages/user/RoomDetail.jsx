@@ -18,7 +18,7 @@ export default function RoomDetail() {
 
   const fetchRoom = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/rooms/${id}`);
+      const res = await axios.get(`https://ai-room-rental-backend.onrender.com/api/rooms/${id}`);
       setRoom(res.data);
     } catch (err) {
       console.log(err);
@@ -29,7 +29,7 @@ export default function RoomDetail() {
   const handleInquiry = async () => {
     if (!message.trim()) return;
     try {
-      await axios.post('http://localhost:5000/api/inquiries', {
+      await axios.post('https://ai-room-rental-backend.onrender.com/api/inquiries', {
         room: id,
         broker: room.broker._id,
         message
