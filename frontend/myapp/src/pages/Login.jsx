@@ -7,13 +7,13 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, API_URL } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post(`${API_URL}/api/auth/login`, form);
       login(res.data.user, res.data.token);
       if (res.data.user.role === 'admin') navigate('/admin');
       else if (res.data.user.role === 'broker') navigate('/broker');
