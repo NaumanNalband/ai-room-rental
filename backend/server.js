@@ -11,24 +11,8 @@ const { protect, restrictTo } = require('./middleware/auth');
 
 const app = express();
 
-// ========== DYNAMIC CORS CONFIGURATION ==========
-// This allows CORS from:
-// - Development: http://localhost:5173
-// - Production: https://ai-room-rental.vercel.app
-// - Any other frontend URL set in FRONTEND_URL env var
-const allowedOrigins = [
-  'http://localhost:5173',           // Local development
-  'http://localhost:3000',           // Alternative local
-  process.env.FRONTEND_URL            // Production URL from .env
-].filter(Boolean);                     // Remove undefined values
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+// ========== SIMPLE CORS - ALLOW ALL ORIGINS ==========
+app.use(cors());  // ✅ SIMPLEST - allows all origins
 app.use(express.json());
 
 // ========== DATABASE CONNECTION ==========
