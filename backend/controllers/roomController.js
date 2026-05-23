@@ -108,21 +108,91 @@ const uploadRoomImages = async (req, res) => {
   }
 };
 
-// NLP Search
-const nlpSearch = async (req, res) => {
+// NLP Search with Fallback
+exports.searchNLP = async (req, res) => {
   try {
     const { query } = req.body;
-    const aiResponse = await axios.post('http://localhost:5001/nlp/search', { query });
-    const filters = aiResponse.data;
-    let filter = {};
-    if (filters.city) filter.city = { $regex: filters.city, $options: 'i' };
-    if (filters.type) filter.type = filters.type;
-    if (filters.maxPrice) filter.price = { ...filter.price, $lte: filters.maxPrice };
-    if (filters.minPrice) filter.price = { ...filter.price, $gte: filters.minPrice };
-    const rooms = await Room.find(filter).populate('broker', 'name email').sort({ createdAt: -1 });
-    res.status(200).json({ filters, rooms });
+    
+    if (!query) {
+      return res.status(400).json({ error: 'Query required' });
+    }
+
+    // Try to call AI Service first
+    try {
+      const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:5001';
+      const aiResponse = await axios.post(`${aiServiceUrl}/nlp/search`, { query });
+      
+      const filters = aiResponse.data;
+      let filterObj = {};
+      
+      if (filters.location) filterObj.city = filters.location;
+      if (filters.type) filterObj.type = filters.type;
+      if (filters.amenities && filters.amenities.length > 0) {
+        filterObj.amenities = { $in: filters.amenities };
+      }
+
+      const rooms = await Room.find(filterObj).populate('broker', 'name phone email');
+      return res.json(rooms);
+
+    } catch (aiError) {
+      // FALLBACK: If AI Service fails, do basic keyword search
+      console.log('AI Service unavailable, using fallback search');
+      
+      const lowerQuery = query.toLowerCase();
+      
+      // Extract city names
+      const cityKeywords = {
+        'sangli': 'Sangli',
+        'kolhapur': 'Kolhapur',
+        'pune': 'Pune',
+        'bangalore': 'Bangalore',
+        'mumbai': 'Mumbai'
+      };
+      
+      let city = null;
+      for (const [keyword, cityName] of Object.entries(cityKeywords)) {
+        if (lowerQuery.includes(keyword)) {
+          city = cityName;
+          break;
+        }
+      }
+      
+      // Extract room type
+      const typeKeywords = {
+        '1bhk': '1BHK',
+        '2bhk': '2BHK',
+        '3bhk': '3BHK',
+        'pg': 'PG',
+        'studio': 'Studio'
+      };
+      
+      let type = null;
+      for (const [keyword, typeName] of Object.entries(typeKeywords)) {
+        if (lowerQuery.includes(keyword)) {
+          type = typeName;
+          break;
+        }
+      }
+      
+      // Extract amenities
+      const amenityKeywords = ['wifi', 'ac', 'parking', 'gym', 'pool', 'kitchen', 'balcony'];
+      const amenities = amenityKeywords.filter(amenity => lowerQuery.includes(amenity));
+      
+      // Build filter object
+      let filterObj = {};
+      if (city) filterObj.city = city;
+      if (type) filterObj.type = type;
+      if (amenities.length > 0) {
+        filterObj.amenities = { $in: amenities };
+      }
+      
+      const rooms = await Room.find(filterObj).populate('broker', 'name phone email');
+      return res.json(rooms);
+    }
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log('Search Error:', err.message);
+    res.status(500).json({ error: 'Search failed. Try manual filters!' });
   }
 };
 
