@@ -340,6 +340,6 @@ const extractImageFeatures = async (req, res) => {
 
 module.exports = { 
   getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, 
-  uploadRoomImages, nlpSearch, mlRecommendations, collabRecommendations,
+  uploadRoomImages, searchNLP, mlRecommendations, collabRecommendations,
   classifyRoomImage, extractImageFeatures
 };
