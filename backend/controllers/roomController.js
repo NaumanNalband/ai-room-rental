@@ -338,6 +338,68 @@ const extractImageFeatures = async (req, res) => {
   }
 };
 
+// NLP Search with Fallback
+exports.searchNLP = async (req, res) => {
+  try {
+    const { query } = req.body;
+    
+    if (!query) {
+      return res.status(400).json({ error: 'Query required' });
+    }
+
+    const lowerQuery = query.toLowerCase();
+    
+    const cityKeywords = {
+      'sangli': 'Sangli',
+      'kolhapur': 'Kolhapur',
+      'pune': 'Pune',
+      'bangalore': 'Bangalore',
+      'mumbai': 'Mumbai'
+    };
+    
+    let city = null;
+    for (const [keyword, cityName] of Object.entries(cityKeywords)) {
+      if (lowerQuery.includes(keyword)) {
+        city = cityName;
+        break;
+      }
+    }
+    
+    const typeKeywords = {
+      '1bhk': '1BHK',
+      '2bhk': '2BHK',
+      '3bhk': '3BHK',
+      'pg': 'PG',
+      'studio': 'Studio'
+    };
+    
+    let type = null;
+    for (const [keyword, typeName] of Object.entries(typeKeywords)) {
+      if (lowerQuery.includes(keyword)) {
+        type = typeName;
+        break;
+      }
+    }
+    
+    const amenityKeywords = ['wifi', 'ac', 'parking', 'gym', 'pool', 'kitchen', 'balcony'];
+    const amenities = amenityKeywords.filter(amenity => lowerQuery.includes(amenity));
+    
+    let filterObj = {};
+    if (city) filterObj.city = city;
+    if (type) filterObj.type = type;
+    if (amenities.length > 0) {
+      filterObj.amenities = { $in: amenities };
+    }
+    
+    const rooms = await Room.find(filterObj).populate('broker', 'name phone email');
+    res.json(rooms);
+
+  } catch (err) {
+    console.log('Search Error:', err.message);
+    res.status(500).json({ error: 'Search failed' });
+  }
+};
+
 module.exports = { 
   getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, 
   uploadRoomImages, searchNLP, mlRecommendations, collabRecommendations,
