@@ -7,7 +7,7 @@ const { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, u
 // Public routes
 router.get('/', getRooms);
 router.get('/:id', getRoomById);
-router.post('/search/nlp', nlpSearch);
+router.post('/search/nlp', searchNLP);
 router.post('/recommend/ml', mlRecommendations);
 router.post('/recommend/collab', collabRecommendations);
 router.post('/classify', classifyRoomImage);
