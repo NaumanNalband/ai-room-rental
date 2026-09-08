@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect, restrictTo } = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
-const { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages, nlpSearch, mlRecommendations, collabRecommendations, classifyRoomImage, extractImageFeatures } = require('../controllers/roomController');
-
+const { getRooms, getRoomById, createRoom, updateRoom, deleteRoom, getMyRooms, uploadRoomImages, searchNLP, mlRecommendations, collabRecommendations, classifyRoomImage, extractImageFeatures } = require('../controllers/roomController');
 // Public routes
 router.get('/', getRooms);
 router.get('/:id', getRoomById);
